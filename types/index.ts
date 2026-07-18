@@ -1,75 +1,64 @@
-// ===== INTERFACES =====
-// An interface defines the SHAPE of an object -- what fields it must have.
-    export interface User {
-        id: number;
-        name: string;
-        email: string;
-        role: "student" | "admin" | "instructor"; // only these values
-        isActive: boolean;
-    }
-        export interface Course {
-        code: string;
-        title: string;
-        units: number;
-        semester: string;
-    }
-    export interface Submission {
-        id: number;
-        studentId: number;
-        courseCode: string;
-        repoUrl: string;
-        submittedAt: Date;
-        score?: number; // ? means this field is optional
-    }
+// types/index.ts
 
-// ===== TYPE ALIASES =====
-// A type alias gives a name to any type -- primitives, unions, functions, objects
-// Alias for a union type (string OR number)
-export type ID = number | string;
-// Alias for an object shape
-export type Coordinate = {
-  x: number;
-  y: number;
-};
-
-// Alias for a function signature
-export type Formatter = (value: number) => string;
-
-// Using them
-const studentId: ID = "S2026-001";
-const position: Coordinate = { x: 10, y: 20 };
-const formatScore: Formatter = (value) => `${value}%`;
-console.log(studentId); // S2026-001
-console.log(formatScore(95.5)); // 95.5%
-
-// ===== UNION TYPES -- One OR the other =====
-export type StringOrNumber = string | number;
-export type Status = "pending" | "active" | "inactive"; // literal union
-// Function that accepts a union type
-export function printId(id: StringOrNumber): void {
-  console.log(`ID: ${id}`);
+// ===== ENUMS =====
+// Const enum for User role ("tutor" | "tutee"). 
+// Const enums are fully erased during compilation, leaving only their values.
+export const enum UserRole {
+  Tutor = "tutor",
+  Tutee = "tutee",
 }
-printId(101);
-printId("S2026-001");
 
-// ===== INTERSECTION TYPES -- combines ALL properties =====
-// StudentWithCourse must have all User fields AND enrolledCourse AND gpa
-export type StudentWithCourse = User & {
-  enrolledCourse: Course;
-  gpa: number;
-};
+// Regular enum for the Booking status lifecycle.
+// Useful when you need the enum object to exist at runtime (e.g., iterating over statuses).
+export enum BookingStatus {
+  Requested = "requested",
+  Confirmed = "confirmed",
+  Completed = "completed",
+}
 
-const topStudent: StudentWithCourse = {
-  id: 1,
-  name: "Maria Santos",
-  email: "m@example.com",
-  role: "student",
-  isActive: true,
-  enrolledCourse: {
-    code: "ITELECT4",
-    title: "IT Elective 4",
-    units: 3,
-    semester: "1st",
-  },
-  gpa: 1.25,
-};
+// ===== CORE ENTITIES =====
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: UserRole; // Uses the UserRole const enum
+  isActive: boolean;
+}
+
+export interface TutoringSession {
+  id: number;
+  tutorId: number;
+  subject: string;
+  ratePerHour: number;
+  availableSlots: number;
+}
+
+export interface Booking {
+  id: number;
+  sessionId: number;
+  tuteeId: number;
+  status: BookingStatus; // Uses the BookingStatus regular enum
+  scheduledAt: Date;
+}
+
+// ===== GENERICS =====
+// 1. Generic interface ApiResponse<T> that can wrap any data shape.
+// 'T' is a placeholder for the actual type of data we're responding with.
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+// ===== UTILITY TYPES =====
+// 1. Partial<T>: Creates a type with all properties of T set to optional. 
+// Excellent for update payloads where you might only update 1 or 2 fields.
+export type BookingUpdate = Partial<Booking>;
+
+// 2. Omit<T, K>: Creates a type by removing keys K from T. 
+// Perfect for safely exposing user profiles without revealing sensitive fields like email.
+export type PublicUser = Omit<User, "email" | "isActive">;
+
+// 3. Pick<T, K>: Creates a type by explicitly selecting keys K from T. 
+// Great for generating a lightweight preview object (e.g., in a list of users).
+export type UserPreview = Pick<User, "id" | "name" | "role">;

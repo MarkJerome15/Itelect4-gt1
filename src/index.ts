@@ -1,76 +1,112 @@
-import type { User, Course, Submission } from "../types/index";
-import type { StringOrNumber } from "../types/index";
-// ===== PRIMITIVE TYPE ANNOTATIONS =====
-// Variables with explicit types
-const projectName: string = "itelect4-project";
-const currentYear: number = 2026;
-const isFullStack: boolean = true;
-const nothing: null = null;
-const notSet: undefined = undefined;
-// Function: typed parameters + typed return value
-function greet(name: string, year: number): string {
-  return `Welcome to ${name} -- AY ${year}!`;
-}
-// void: function that does NOT return a value
-function logMessage(message: string): void {
-  console.log(message);
-}
-logMessage(greet(projectName, currentYear));
+// src/index.ts
 
-// ===== SPECIAL TYPES =====
-// any -- disables TypeScript type checking
-// [!] Avoid using this; it defeats the purpose of TypeScript
-let anything: any = "hello";
-anything = 42; // No error
-anything = true; // No error
-// unknown -- the safer version of any
-// You MUST check the type before using it
-let userInput: unknown = "test";
-if (typeof userInput === "string") {
-  console.log(userInput.toUpperCase()); // OK -- TypeScript knows it's a string here
-}
-// never -- a function that NEVER returns
-// Used when a function always throws an error or loops forever
-function throwError(message: string): never {
-  throw new Error(message);
+import {
+  User,
+  UserRole,
+  TutoringSession,
+  Booking,
+  BookingStatus,
+  ApiResponse,
+  BookingUpdate,
+  PublicUser,
+  UserPreview
+} from "../types/index";
+
+// ===== GENERIC FUNCTIONS =====
+
+// 1. Constrained generic function that gets an item by ID. 
+// `T extends { id: number }` ensures that whatever type is passed in MUST have an 'id' property of type number.
+export function getById<T extends { id: number }>(items: T[], id: number): T | undefined {
+  return items.find(item => item.id === id);
 }
 
-// ===== USING INTERFACES =====
-const student: User = {
+// 2. A basic generic function that gets the first item in an array, or undefined if empty.
+// 'T' can be literally anything here.
+export function getFirst<T>(items: T[]): T | undefined {
+  return items.length > 0 ? items[0] : undefined;
+}
+
+// ===== EXAMPLE USAGE =====
+
+// 1. Create sample users (Tutor and Tutee) using the UserRole const enum
+const sampleTutor: User = {
   id: 1,
-  name: "Juan dela Cruz",
-  email: "juan@example.com",
-  role: "student",
+  name: "Alice Math",
+  email: "alice@tutor.com",
+  role: UserRole.Tutor, // Enum usage
   isActive: true,
 };
-const course: Course = {
-  code: "ITELECT4",
-  title: "IT Elective 4",
-  units: 3,
-  semester: "1st Semester 2026-2027",
+
+const sampleTutee: User = {
+  id: 2,
+  name: "Bob Student",
+  email: "bob@student.com",
+  role: UserRole.Tutee, // Enum usage
+  isActive: true,
 };
 
-console.log(student);
-console.log(course);
+const allUsers = [sampleTutor, sampleTutee];
 
-// ===== TYPE NARROWING =====
-// Narrowing with typeof
-// Without the if-check, TypeScript would error:
-// Property 'toUpperCase' does not exist on type 'number'
-function processInput(input: StringOrNumber): string {
-  if (typeof input === "string") {
-    return input.toUpperCase(); // TypeScript knows: input is string here
-  }
-  return input.toFixed(2); // TypeScript knows: input is number here
-}
-// Narrowing with instanceof
-// Used with class instances like Date, Error, etc.
-function formatDate(value: string | Date): string {
-  if (value instanceof Date) {
-    return value.toLocaleDateString(); // TypeScript knows: it's a Date
-  }
-  return value; // TypeScript knows: it's a string
-}
-console.log(processInput("hello")); // HELLO
-console.log(processInput(3.14159)); // 3.14
-console.log(formatDate(new Date())); // e.g. 7/4/2026
+// 2. Create a sample TutoringSession
+const mathSession: TutoringSession = {
+  id: 101,
+  tutorId: sampleTutor.id,
+  subject: "Calculus 101",
+  ratePerHour: 25,
+  availableSlots: 5,
+};
+
+const allSessions = [mathSession];
+
+// 3. Create a sample Booking using the BookingStatus regular enum
+const sampleBooking: Booking = {
+  id: 1001,
+  sessionId: mathSession.id,
+  tuteeId: sampleTutee.id,
+  status: BookingStatus.Requested, // Enum usage
+  scheduledAt: new Date("2026-08-01T10:00:00Z"),
+};
+
+// 4. Using the constrained generic function 'getById'
+// Notice we pass <User> and <TutoringSession> to tell TypeScript what 'T' is.
+const foundUser = getById<User>(allUsers, 2);
+console.log("Found User:", foundUser?.name); // Output: Bob Student
+
+const foundSession = getById<TutoringSession>(allSessions, 101);
+console.log("Found Session:", foundSession?.subject); // Output: Calculus 101
+
+// Using the basic generic function 'getFirst'
+const firstUser = getFirst<User>(allUsers);
+console.log("First User in list:", firstUser?.name); // Output: Alice Math
+
+// 5. Using the generic ApiResponse<T> interface
+// We wrap a User object in our generic API response structure
+const userResponse: ApiResponse<User> = {
+  success: true,
+  data: sampleTutor,
+  message: "Tutor fetched successfully"
+};
+console.log("API Response Data:", userResponse.data.name);
+
+// 6. Using Utility Types
+// a) Partial<T>: Provide only the fields you want to update
+const bookingUpdatePayload: BookingUpdate = {
+  status: BookingStatus.Confirmed 
+};
+console.log("Booking Update Payload:", bookingUpdatePayload);
+
+// b) Omit<T, K>: Provide user data but WITHOUT email and isActive
+const publicTutorProfile: PublicUser = {
+  id: sampleTutor.id,
+  name: sampleTutor.name,
+  role: sampleTutor.role
+};
+console.log("Public Tutor Profile:", publicTutorProfile);
+
+// c) Pick<T, K>: Provide ONLY the id, name, and role fields
+const tuteePreview: UserPreview = {
+  id: sampleTutee.id,
+  name: sampleTutee.name,
+  role: sampleTutee.role
+};
+console.log("Tutee Preview:", tuteePreview);
