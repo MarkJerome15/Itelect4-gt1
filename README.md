@@ -1,34 +1,32 @@
-# Peer Tutoring Booking Platform
+# React + TypeScript + Vite
 
-A platform connecting students with tutors. Tutors can post tutoring sessions specifying the subject, rate, and available time slots. Tutees can then browse and book these sessions, with bookings transitioning through a status lifecycle (Requested -> Confirmed -> Completed).
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-## Core Entities & Types
-- `User`: Defines user accounts (tutors or tutees).
-- `UserRole`: A const enum for user roles (`Tutor` or `Tutee`).
-- `TutoringSession`: Represents a session posted by a tutor.
-- `Booking`: Represents a reservation made by a tutee.
-- `BookingStatus`: An enum tracking the lifecycle of a booking.
-- `ApiResponse<T>`: A generic wrapper for standardizing API responses.
-- `BookingUpdate` (`Partial<Booking>`): Utility type for handling partial updates to a booking without requiring all fields.
-- `PublicUser` (`Omit<User, "email" | "isActive">`): Utility type for safely exposing public user data by omitting sensitive information.
-- `UserPreview` (`Pick<User, "id" | "name" | "role">`): Utility type for constructing lightweight user previews.
+Currently, two official plugins are available:
 
-## Installation & Running
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-1. **Install dependencies:**
-   Ensure you have your Node environment set up, then run:
-   ```bash
-   npm install
-   ```
+## React Compiler
 
-2. **Run the application:**
-   Execute the `src/index.ts` file using `ts-node`:
-   ```bash
-   npx ts-node src/index.ts
-   ```
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-3. **Type-check the code:**
-   Verify that there are zero TypeScript compiler errors under strict mode:
-   ```bash
-   npx tsc --noEmit
-   ```
+## Expanding the Oxlint configuration
+
+If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "options": {
+    "typeAware": true
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  }
+}
+```
+
+See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.

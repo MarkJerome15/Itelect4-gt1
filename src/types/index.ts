@@ -3,7 +3,7 @@
 // ===== ENUMS =====
 // Const enum for User role ("tutor" | "tutee"). 
 // Const enums are fully erased during compilation, leaving only their values.
-export const enum UserRole {
+export enum UserRole {
   Tutor = "tutor",
   Tutee = "tutee",
 }
