@@ -1,32 +1,40 @@
-# React + TypeScript + Vite
+# Peer Tutoring Booking Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A web application that connects students with peer tutors. Tutees can browse available tutors and tutoring sessions, make bookings, and track booking statuses. Built with React, TypeScript, and Vite for ITELECT4.
 
-Currently, two official plugins are available:
+## Interfaces / Types
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Name | Kind | Fields |
+|---|---|---|
+| `User` | `interface` | `id`, `name`, `email`, `role` (UserRole), `isActive` |
+| `TutoringSession` | `interface` | `id`, `tutorId`, `subject`, `ratePerHour`, `availableSlots` |
+| `Booking` | `interface` | `id`, `sessionId`, `tuteeId`, `status` (BookingStatus), `scheduledAt` |
+| `ApiResponse<T>` | `interface` | `success`, `data`, `message?` |
+| `BookingUpdate` | `type` | `Partial<Booking>` |
+| `PublicUser` | `type` | `Omit<User, "email" \| "isActive">` |
+| `UserPreview` | `type` | `Pick<User, "id" \| "name" \| "role">` |
+| `UserRole` | `enum` | `Tutor = "tutor"`, `Tutee = "tutee"` |
+| `BookingStatus` | `enum` | `Requested`, `Confirmed`, `Completed` |
 
-## React Compiler
+## How to Install and Run
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+To type-check with no output:
+
+```bash
+npx tsc --noEmit
+```
+
+## Git
+
+```bash
+git add .
+git commit -m "GT1 Part 2: generics, utility types, enums"
+git tag gt1
+git push --tags
+git push
+```
