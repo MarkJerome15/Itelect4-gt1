@@ -33,7 +33,10 @@ function App() {
   const [selectedTutor, setSelectedTutor] = useState<User | null>(null);
   const [sessions, setSessions] = useState<TutoringSession[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  
+  const [isDarkMode, toggleDarkMode] = useToggle(false);
 
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -62,103 +65,132 @@ function App() {
   const previousSearch = usePrevious<string>(searchTerm);
 
   return (
-    <div style={{ fontFamily: 'sans-serif', padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
-      <h1>📚 Peer Tutoring Platform</h1>
-      <p style={{ color: '#555' }}>GT2 Part 2 — useState · useEffect · useRef · Custom Hooks</p>
-      <hr />
-
-      <section>
-        <h2>🔍 Search Sessions</h2>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <input
-            ref={searchInputRef}
-            type="text"
-            placeholder="Filter by subject…"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            style={{ padding: '0.4rem 0.8rem', fontSize: '1rem', borderRadius: '4px', border: '1px solid #aaa', width: '260px' }}
-          />
-          <button
-            onClick={focusSearchInput}
-            style={{ padding: '0.4rem 0.8rem', cursor: 'pointer', borderRadius: '4px', border: '1px solid #007bff', background: '#007bff', color: '#fff' }}
-          >
-            Focus Input
-          </button>
-        </div>
-
-        {previousSearch !== undefined && previousSearch !== searchTerm && (
-          <p style={{ color: '#888', fontSize: '0.85rem', marginTop: '0.4rem' }}>
-            ↩ Previous search: <em>"{previousSearch}"</em>
-          </p>
-        )}
-      </section>
-
-      <hr />
-
-      <section>
-        <h2>👩‍🏫 Available Tutors</h2>
-
-        {selectedTutor !== null && (
-          <p style={{ background: '#d4edda', border: '1px solid #c3e6cb', borderRadius: '4px', padding: '0.5rem 1rem', display: 'inline-block', marginBottom: '0.5rem' }}>
-            ✅ Selected: <strong>{selectedTutor.name}</strong>
-          </p>
-        )}
-
-        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-          {MOCK_TUTORS.map((tutor) => (
-            <TutorCard key={tutor.id} tutor={tutor} onSelect={setSelectedTutor} />
-          ))}
-        </div>
-      </section>
-
-      <hr />
-
-      <section>
-        <h2>ℹ️ Extra Details</h2>
-        <button
-          onClick={toggleDetails}
-          style={{ padding: '0.4rem 1rem', cursor: 'pointer', borderRadius: '4px', marginBottom: '0.5rem' }}
-        >
-          {showDetails ? '▲ Hide Details' : '▼ Show Details'}
-        </button>
-        {showDetails && (
-          <div style={{ background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: '4px', padding: '1rem' }}>
-            <p><strong>Platform Info</strong></p>
-            <ul>
-              <li>Sessions are loaded asynchronously via <code>useEffect</code> + <code>setTimeout</code>.</li>
-              <li>Search filtering is a <em>derived value</em> — not stored in state.</li>
-              <li><code>useRef</code> tracks the search input without causing extra renders.</li>
-              <li><code>usePrevious</code> uses a ref + effect to remember the last search term.</li>
-            </ul>
+    <div className={`${isDarkMode ? 'dark' : ''} min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors`}>
+      <div className="max-w-5xl mx-auto p-6 font-sans text-gray-900 dark:text-gray-100">
+        <header className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-bold">Peer Tutoring Platform</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">GT2 Part 3 - Tailwind CSS & Dark Mode</p>
           </div>
-        )}
-      </section>
+          <button 
+            onClick={toggleDarkMode}
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          >
+            Toggle {isDarkMode ? 'Light' : 'Dark'} Mode
+          </button>
+        </header>
 
-      <hr />
+        <hr className="border-gray-300 dark:border-gray-700 mb-8" />
 
-      <section>
-        <h2>📋 Tutoring Sessions</h2>
-        {isLoading ? (
-          <p style={{ color: '#007bff', fontStyle: 'italic' }}>⏳ Loading sessions…</p>
-        ) : filteredSessions.length === 0 ? (
-          <p style={{ color: '#dc3545' }}>No sessions match "<strong>{searchTerm}</strong>".</p>
-        ) : (
-          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {filteredSessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Search Sessions</h2>
+          <div className="flex gap-2 items-center">
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Filter by subject..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={focusSearchInput}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+            >
+              Focus Input
+            </button>
+          </div>
+
+          {previousSearch !== undefined && previousSearch !== searchTerm && (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Previous search: "{previousSearch}"
+            </p>
+          )}
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Available Tutors</h2>
+
+          {selectedTutor !== null && (
+            <div className="mb-4 inline-block px-4 py-2 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-300 rounded">
+              Selected: <span className="font-semibold">{selectedTutor.name}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {MOCK_TUTORS.map((tutor) => (
+              <TutorCard key={tutor.id} tutor={tutor} onSelect={setSelectedTutor} />
             ))}
           </div>
-        )}
-      </section>
+        </section>
 
-      <hr />
+        <section className="mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <h2 className="text-xl font-semibold">Tutoring Sessions</h2>
+            <button 
+              onClick={() => setIsError(!isError)}
+              className="text-sm px-3 py-1 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+            >
+              Simulate Error
+            </button>
+          </div>
 
-      <section>
-        <h2>🗂️ My Bookings</h2>
-        <BookingBadge booking={SAMPLE_BOOKING}>
-          <span>🗓️ Scheduled for: {SAMPLE_BOOKING.scheduledAt.toLocaleDateString()}</span>
-        </BookingBadge>
-      </section>
+          {isError ? (
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-400 rounded-lg">
+              <h3 className="font-semibold mb-1">Failed to load sessions</h3>
+              <p className="text-sm">Please check your connection and try again.</p>
+            </div>
+          ) : isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map((skeleton) => (
+                <div key={skeleton} className="border border-gray-200 dark:border-gray-700 p-5 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse h-28">
+                  <div className="h-5 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-3"></div>
+                  <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+                  <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/3"></div>
+                </div>
+              ))}
+            </div>
+          ) : filteredSessions.length === 0 ? (
+            <p className="text-gray-500 dark:text-gray-400">No sessions match "{searchTerm}".</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredSessions.map((session) => (
+                <SessionCard key={session.id} session={session} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">My Bookings</h2>
+          <BookingBadge booking={SAMPLE_BOOKING}>
+            <span>Scheduled for: {SAMPLE_BOOKING.scheduledAt.toLocaleDateString()}</span>
+          </BookingBadge>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Extra Details</h2>
+          <button
+            onClick={toggleDetails}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded mb-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            {showDetails ? 'Hide Details' : 'Show Details'}
+          </button>
+          
+          {showDetails && (
+            <div className="p-4 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+              <p className="font-semibold mb-2">Platform Info</p>
+              <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                <li>Sessions are loaded asynchronously via useEffect + setTimeout.</li>
+                <li>Search filtering is a derived value - not stored in state.</li>
+                <li>useRef tracks the search input without causing extra renders.</li>
+                <li>usePrevious uses a ref + effect to remember the last search term.</li>
+              </ul>
+            </div>
+          )}
+        </section>
+
+      </div>
     </div>
   );
 }
