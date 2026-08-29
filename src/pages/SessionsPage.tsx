@@ -6,6 +6,7 @@ import { SessionCard } from '../components/SessionCard';
 import { usePrevious } from '../hooks/usePrevious';
 import { useUiStore } from '../store/uiStore';
 import { fetchSessions } from '../api/client';
+import { Input } from '@/components/ui/input';
 
 export function SessionsPage() {
   // These four lines replace ALL of Session 6's fetching state
@@ -39,11 +40,10 @@ export function SessionsPage() {
   return (
     <div>
       <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">Tutoring Sessions</h2>
-      <input
+      <Input
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search sessions..."
-        className="w-full rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-gray-900 dark:text-white"
       />
       {previousSearch !== undefined && previousSearch !== searchTerm && (
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
