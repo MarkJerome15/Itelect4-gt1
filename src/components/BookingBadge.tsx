@@ -1,8 +1,8 @@
 import React from 'react';
-import type { Booking } from '../types';
+import type { ApiBooking } from '../types';
 
 interface BookingBadgeProps {
-  booking: Booking;
+  booking: ApiBooking;
   children?: React.ReactNode; 
 }
 
@@ -28,3 +28,5 @@ export const BookingBadge: React.FC<BookingBadgeProps> = ({ booking, children })
     </div>
   );
 };
+
+export default BookingBadge;

@@ -62,3 +62,17 @@ export type PublicUser = Omit<User, "email" | "isActive">;
 // 3. Pick<T, K>: Creates a type by explicitly selecting keys K from T. 
 // Great for generating a lightweight preview object (e.g., in a list of users).
 export type UserPreview = Pick<User, "id" | "name" | "role">;
+
+// ===== SESSION 7: API TYPES =====
+// JSON has no Date, and json-server writes ids as strings.
+export type ApiTutoringSession = Omit<TutoringSession, "id"> & {
+  id: string;
+};
+
+export type ApiBooking = Omit<Booking, "id" | "scheduledAt"> & {
+  id: string;
+  scheduledAt: string;
+};
+
+// What we SEND when creating one. No id yet -- the server makes it.
+export type NewBooking = Omit<ApiBooking, "id">;
