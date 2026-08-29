@@ -5,18 +5,18 @@
 // - NavLink (not Link) is used so we can read `isActive` to highlight the current page.
 // - The Dashboard NavLink needs `end` so it only matches exactly "/",
 //   not every URL that starts with "/" (which is all of them).
-// - Dark mode toggle lives HERE so every page inherits it. The wrapping div
+// - Dark mode toggle lives in uiStore so every page inherits it. The wrapping div
 //   conditionally gets className="dark", and Tailwind's dark: variants kick in.
 // - <Outlet /> inside <main> is what renders the matched child route's element.
 //   If you forget <Outlet />, child routes render NOTHING — with zero errors.
-//   That makes it a very sneaky bug to debug.
 
 import { NavLink, Outlet, useNavigate } from 'react-router';
-import { useToggle } from '../hooks/useToggle';
 import { useAuthStore } from '../store/authStore';
+import { useUiStore } from '../store/uiStore';
 
 export function Layout() {
-  const [isDarkMode, toggleDarkMode] = useToggle(false);
+  const isDarkMode = useUiStore((state) => state.isDarkMode);
+  const toggleDarkMode = useUiStore((state) => state.toggleDarkMode);
   const { token, userName, logout } = useAuthStore();
   const navigate = useNavigate();
 
@@ -96,3 +96,5 @@ export function Layout() {
     </div>
   );
 }
+
+export default Layout;

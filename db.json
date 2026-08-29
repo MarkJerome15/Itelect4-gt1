@@ -1,0 +1,63 @@
+{
+  "sessions": [
+    {
+      "id": "101",
+      "tutorId": 1,
+      "subject": "Calculus 101",
+      "ratePerHour": 25,
+      "availableSlots": 5
+    },
+    {
+      "id": "102",
+      "tutorId": 1,
+      "subject": "Linear Algebra",
+      "ratePerHour": 30,
+      "availableSlots": 3
+    },
+    {
+      "id": "103",
+      "tutorId": 2,
+      "subject": "Physics Mechanics",
+      "ratePerHour": 28,
+      "availableSlots": 2
+    },
+    {
+      "id": "104",
+      "tutorId": 2,
+      "subject": "Chemistry Basics",
+      "ratePerHour": 22,
+      "availableSlots": 4
+    },
+    {
+      "id": "105",
+      "tutorId": 3,
+      "subject": "World History",
+      "ratePerHour": 20,
+      "availableSlots": 6
+    }
+  ],
+  "bookings": [
+    {
+      "id": "1001",
+      "sessionId": 101,
+      "tuteeId": 99,
+      "status": "confirmed",
+      "scheduledAt": "2026-08-01T10:00:00.000Z"
+    },
+    {
+      "id": "1002",
+      "sessionId": 103,
+      "tuteeId": 99,
+      "status": "requested",
+      "scheduledAt": "2026-08-05T14:00:00.000Z"
+    },
+    {
+      "sessionId": 102,
+      "tuteeId": 99,
+      "status": "requested",
+      "scheduledAt": "2026-08-29T15:15:54.846Z",
+      "id": "vrmZJsSFyAg"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

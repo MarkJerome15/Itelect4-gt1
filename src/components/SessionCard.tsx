@@ -1,8 +1,8 @@
 import React from 'react';
-import type { TutoringSession } from '../types';
+import type { ApiTutoringSession, TutoringSession } from '../types';
 
 interface SessionCardProps {
-  session: TutoringSession;
+  session: ApiTutoringSession | TutoringSession;
   variant?: "default" | "compact";
 }
 
@@ -17,3 +17,5 @@ export const SessionCard: React.FC<SessionCardProps> = ({ session, variant = "de
     </div>
   );
 };
+
+export default SessionCard;

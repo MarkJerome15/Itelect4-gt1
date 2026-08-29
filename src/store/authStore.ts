@@ -1,10 +1,7 @@
-// src/store/authStore.ts
-// Zustand store for authentication state.
-// Uses an explicit AuthState interface so every consumer knows the exact shape.
+// src/store/authStore.ts -- the finished file
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-import { create } from 'zustand';
-
-// The store's shape — typed explicitly so TypeScript catches any misuse.
 interface AuthState {
   token: string | null;
   userName: string | null;
@@ -12,12 +9,23 @@ interface AuthState {
   logout: () => void;
 }
 
-// create<AuthState> tells Zustand what the store contains.
-// login() generates a fake token and stores the user's name.
-// logout() resets both to null.
-export const useAuthStore = create<AuthState>((set) => ({
-  token: null,
-  userName: null,
-  login: (name: string) => set({ token: `demo-token-${name}`, userName: name }),
-  logout: () => set({ token: null, userName: null }),
-}));
+// The store from Session 6, now wrapped in persist( ... )
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      token: null,
+      userName: null,
+      login: (name: string) => set({ token: `demo-token-${name}`, userName: name }),
+      logout: () => set({ token: null, userName: null }),
+    }),
+    {
+      name: "itelect4-auth", // the localStorage key it writes to
+      partialize: (state) => ({ // save ONLY these two fields
+        token: state.token,
+        userName: state.userName,
+      }),
+    }
+  )
+);
+
+export default useAuthStore;
