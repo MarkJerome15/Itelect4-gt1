@@ -1,35 +1,54 @@
-// src/pages/BookingsPage.tsx
-import { useState } from 'react';
+// src/pages/BookingsPage.tsx -- the finished file
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ApiBooking } from '../types';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { ApiBooking, ApiTutoringSession } from '../types';
 import { BookingStatus } from '../types';
+import { bookingSchema, type BookingFormValues } from '../schemas/bookingSchema';
 import { BookingBadge } from '../components/BookingBadge';
-import { fetchBookings, createBooking } from '../api/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { fetchBookings, createBooking, fetchSessions } from '../api/client';
 
 export function BookingsPage() {
-  const [sessionId, setSessionId] = useState<string>('');
   const queryClient = useQueryClient();
 
-  // 1. READ -- useQuery
+  // useForm holds the values, runs the schema, and stores the errors.
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<BookingFormValues>({
+    resolver: zodResolver(bookingSchema),
+    mode: 'onBlur',
+    defaultValues: { sessionId: '', notes: '' },
+  });
+
+  // Same queryKey as SessionsPage, so this list comes out of the cache.
+  const sessions = useQuery<ApiTutoringSession[]>({
+    queryKey: ['sessions'],
+    queryFn: fetchSessions,
+  });
+
   const { data, isPending, isError } = useQuery<ApiBooking[]>({
     queryKey: ['bookings'],
     queryFn: fetchBookings,
   });
 
-  // 2. WRITE -- useMutation
   const addBooking = useMutation({
     mutationFn: createBooking,
     onSuccess: () => {
-      // Invalidate queries to trigger an immediate refetch
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      setSessionId('');
+      reset(); // clears every field at once
     },
   });
 
-  const handleAdd = (): void => {
-    if (!sessionId.trim()) return;
+  // handleSubmit only calls this after the schema passes.
+  const onSubmit = (values: BookingFormValues): void => {
     addBooking.mutate({
-      sessionId: Number(sessionId) || 101,
+      sessionId: Number(values.sessionId),
       tuteeId: 99,
       status: BookingStatus.Requested,
       scheduledAt: new Date().toISOString(),
@@ -52,21 +71,56 @@ export function BookingsPage() {
     <div>
       <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">My Bookings</h2>
 
-      <div className="mb-6 flex gap-2">
-        <input
-          value={sessionId}
-          onChange={(e) => setSessionId(e.target.value)}
-          placeholder="Session ID (e.g. 101)..."
-          className="w-full rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-gray-900 dark:text-white"
-        />
-        <button
-          onClick={handleAdd}
-          disabled={sessionId === '' || addBooking.isPending}
-          className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 shrink-0"
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mb-6 grid gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700 bg-white dark:bg-gray-800"
+      >
+        <div className="grid gap-1.5">
+          <Label htmlFor="sessionId" className="text-foreground">
+            Tutoring Session
+          </Label>
+          <select
+            id="sessionId"
+            {...register('sessionId')}
+            className="h-8 rounded-lg border border-input bg-background px-2.5 text-sm text-foreground"
+          >
+            <option value="">Select a session...</option>
+            {sessions.data?.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.subject} (${s.ratePerHour}/hr)
+              </option>
+            ))}
+          </select>
+          {errors.sessionId && (
+            <p className="text-sm text-red-600">{errors.sessionId.message}</p>
+          )}
+        </div>
+
+        <div className="grid gap-1.5">
+          <Label htmlFor="notes" className="text-foreground">
+            Study Topic / Goal
+          </Label>
+          <Input
+            id="notes"
+            {...register('notes')}
+            aria-invalid={errors.notes ? true : undefined}
+            placeholder="e.g., Exam preparation for Linear Algebra"
+          />
+          {errors.notes && (
+            <p className="text-sm text-red-600">{errors.notes.message}</p>
+          )}
+        </div>
+
+        {/* Never disabled on "invalid": clicking it is what shows the
+            error messages. Only a save in flight disables it. */}
+        <Button
+          type="submit"
+          disabled={addBooking.isPending}
+          className="justify-self-start"
         >
           {addBooking.isPending ? 'Saving...' : 'Add Booking'}
-        </button>
-      </div>
+        </Button>
+      </form>
 
       {addBooking.isError && (
         <p className="mb-4 text-sm text-red-700 dark:text-red-400">
@@ -79,7 +133,8 @@ export function BookingsPage() {
           <div key={booking.id}>
             <BookingBadge booking={booking}>
               <span>
-                Session #{booking.sessionId} • Scheduled for: {new Date(booking.scheduledAt).toLocaleDateString()}
+                Session #{booking.sessionId} • Scheduled for:{' '}
+                {new Date(booking.scheduledAt).toLocaleDateString()}
               </span>
             </BookingBadge>
           </div>
