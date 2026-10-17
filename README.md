@@ -2,6 +2,10 @@
 
 A web application that connects students with peer tutors. Tutees can browse available tutors and tutoring sessions, make bookings, and track booking statuses. Built with React, TypeScript, and Vite for ITELECT4.
 
+## Live Deployment
+
+- **Live Demo:** [https://itelect4-frontend.vercel.app](https://itelect4-frontend.vercel.app/)
+
 ## Interfaces / Types
 
 | Name | Kind | Fields |
