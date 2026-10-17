@@ -18,7 +18,7 @@ export const BookingBadge: React.FC<BookingBadgeProps> = ({ booking, children })
 
   return (
     <div className={`p-3 rounded inline-block ${badgeClasses}`}>
-      <span className="font-semibold">Booking #{booking.id}</span> - {booking.status.toUpperCase()}
+      <span className="font-semibold">Booking #{booking._id ?? booking.id}</span> - {booking.status.toUpperCase()}
       
       {children && (
         <div className="mt-2 pt-2 text-sm border-t border-black/10 dark:border-white/10">

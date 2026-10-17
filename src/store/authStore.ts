@@ -1,21 +1,21 @@
-// src/store/authStore.ts -- the finished file
+// src/store/authStore.ts -- updated for real API auth
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface AuthState {
   token: string | null;
   userName: string | null;
-  login: (name: string) => void;
+  /** Store a real JWT + display name after a successful API login. */
+  setSession: (token: string, userName: string) => void;
   logout: () => void;
 }
 
-// The store from Session 6, now wrapped in persist( ... )
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       token: null,
       userName: null,
-      login: (name: string) => set({ token: `demo-token-${name}`, userName: name }),
+      setSession: (token: string, userName: string) => set({ token, userName }),
       logout: () => set({ token: null, userName: null }),
     }),
     {
@@ -29,3 +29,4 @@ export const useAuthStore = create<AuthState>()(
 );
 
 export default useAuthStore;
+

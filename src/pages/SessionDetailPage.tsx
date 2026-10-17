@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router';
 import type { ApiTutoringSession } from '../types';
 import { fetchSessionById } from '../api/client';
-import { MOCK_TUTORS } from '../data/mockData';
+
 
 export function SessionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -37,7 +37,9 @@ export function SessionDetailPage() {
     );
   }
 
-  const tutor = MOCK_TUTORS.find((t) => t.id === data.tutorId);
+  // The backend may populate a tutor name in the future.
+  // For now, display tutorId directly.
+  const sessionId = data._id ?? data.id;
 
   return (
     <>
@@ -54,7 +56,7 @@ export function SessionDetailPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <div>
             <span className="text-gray-500 dark:text-gray-400">Tutor</span>
-            <p className="font-semibold">{tutor?.name ?? 'Unknown Tutor'}</p>
+            <p className="font-semibold">Tutor #{data.tutorId}</p>
           </div>
           <div>
             <span className="text-gray-500 dark:text-gray-400">Rate</span>
@@ -66,7 +68,7 @@ export function SessionDetailPage() {
           </div>
           <div>
             <span className="text-gray-500 dark:text-gray-400">Session ID</span>
-            <p className="font-semibold">{data.id}</p>
+            <p className="font-semibold">{sessionId}</p>
           </div>
         </div>
       </div>

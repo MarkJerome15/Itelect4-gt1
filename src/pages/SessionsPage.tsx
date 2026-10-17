@@ -27,7 +27,7 @@ export function SessionsPage() {
   if (isError) {
     return (
       <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-red-700 dark:text-red-400">
-        {error.message} -- is json-server running on port 3001?
+        {error.message}
       </div>
     );
   }
@@ -58,8 +58,8 @@ export function SessionsPage() {
         ) : (
           filteredSessions.map((session) => (
             <Link
-              key={session.id}
-              to={`/sessions/${session.id}`}
+              key={session._id ?? session.id}
+              to={`/sessions/${session._id ?? session.id}`}
               className="block hover:ring-2 hover:ring-blue-500 rounded-lg transition-all"
             >
               <SessionCard session={session} />

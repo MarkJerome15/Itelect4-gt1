@@ -48,7 +48,7 @@ export function BookingsPage() {
   // handleSubmit only calls this after the schema passes.
   const onSubmit = (values: BookingFormValues): void => {
     addBooking.mutate({
-      sessionId: Number(values.sessionId),
+      sessionId: values.sessionId,
       tuteeId: 99,
       status: BookingStatus.Requested,
       scheduledAt: new Date().toISOString(),
@@ -86,7 +86,7 @@ export function BookingsPage() {
           >
             <option value="">Select a session...</option>
             {sessions.data?.map((s) => (
-              <option key={s.id} value={s.id}>
+              <option key={s._id ?? s.id} value={s._id ?? s.id}>
                 {s.subject} (${s.ratePerHour}/hr)
               </option>
             ))}
@@ -130,7 +130,7 @@ export function BookingsPage() {
 
       <div className="space-y-4">
         {(data ?? []).map((booking) => (
-          <div key={booking.id}>
+          <div key={booking._id ?? booking.id}>
             <BookingBadge booking={booking}>
               <span>
                 Session #{booking.sessionId} • Scheduled for:{' '}

@@ -63,16 +63,22 @@ export type PublicUser = Omit<User, "email" | "isActive">;
 // Great for generating a lightweight preview object (e.g., in a list of users).
 export type UserPreview = Pick<User, "id" | "name" | "role">;
 
-// ===== SESSION 7: API TYPES =====
-// JSON has no Date, and json-server writes ids as strings.
+// ===== SESSION 7 → 10: API TYPES =====
+// The Vercel/MongoDB backend returns _id (a string ObjectId).
+// We normalise to `id` for the UI and keep `_id` optional so both
+// json-server and Mongoose responses satisfy the same type.
 export type ApiTutoringSession = Omit<TutoringSession, "id"> & {
+  _id?: string;
   id: string;
 };
 
-export type ApiBooking = Omit<Booking, "id" | "scheduledAt"> & {
+export type ApiBooking = Omit<Booking, "id" | "scheduledAt" | "sessionId"> & {
+  _id?: string;
   id: string;
+  sessionId: string;
   scheduledAt: string;
 };
 
 // What we SEND when creating one. No id yet -- the server makes it.
-export type NewBooking = Omit<ApiBooking, "id">;
+export type NewBooking = Omit<ApiBooking, "id" | "_id">;
+
