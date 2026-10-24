@@ -16,6 +16,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { SessionsPage } from './pages/SessionsPage';
 import { SessionDetailPage } from './pages/SessionDetailPage';
 import { BookingsPage } from './pages/BookingsPage';
+import { ReviewPage } from './pages/ReviewPage';
 import { LoginPage } from './pages/LoginPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { useAuthStore } from './store/authStore';
@@ -48,6 +49,7 @@ function App() {
           <Route path="sessions" element={<SessionsPage />} />
           <Route path="sessions/:id" element={<SessionDetailPage />} />
           <Route path="bookings" element={<BookingsPage />} />
+          <Route path="review" element={<ReviewPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

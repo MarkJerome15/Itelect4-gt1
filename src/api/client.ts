@@ -4,6 +4,9 @@
 // and can be pointed at a deployed URL via the env var.
 
 import { useAuthStore } from '../store/authStore';
+import type { AiReview } from '../types';
+
+export type { AiReview };
 
 export const API_URL =
   (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:4000';
@@ -338,3 +341,17 @@ export async function deleteBooking(id: string): Promise<void> {
     headers: authHeaders(),
   });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AI REVIEW  —  POST /api/ai
+// ═══════════════════════════════════════════════════════════════════════════
+
+/** POST /api/ai — request Gemini feedback on project/tutoring description */
+export function askAi(prompt: string): Promise<AiReview> {
+  return request<AiReview>('/api/ai', {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ prompt }),
+  });
+}
+

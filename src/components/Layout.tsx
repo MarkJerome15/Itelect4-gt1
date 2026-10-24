@@ -11,6 +11,7 @@ import {
   Moon,
   LogOut,
   User,
+  Sparkles,
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useUiStore } from '../store/uiStore';
@@ -71,6 +72,10 @@ export function Layout() {
                 <NavLink to="/bookings" className={navLinkClass} id="nav-bookings">
                   <CalendarCheck className="w-4 h-4" />
                   <span>Bookings</span>
+                </NavLink>
+                <NavLink to="/review" className={navLinkClass} id="nav-review">
+                  <Sparkles className="w-4 h-4" />
+                  <span>AI Review</span>
                 </NavLink>
               </div>
             )}
