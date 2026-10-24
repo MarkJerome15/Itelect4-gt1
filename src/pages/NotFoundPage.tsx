@@ -1,29 +1,27 @@
 // src/pages/NotFoundPage.tsx
-// Styled 404 page with a Link back to "/".
-// Matched by the catch-all route path="*" in the route table,
-// so no URL ever shows a blank page.
-//
-// Uses <Link> (not useNavigate) because this is a static
-// navigational element in JSX — no click handler needed.
-
 import { Link } from 'react-router';
 
 export function NotFoundPage() {
   return (
-    <div className="text-center py-16">
-      <h1 className="text-6xl font-bold text-gray-300 dark:text-gray-600 mb-4">
+    <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+      <p className="text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-primary to-indigo-600 dark:from-primary dark:to-indigo-400 leading-none mb-4">
         404
+      </p>
+      <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+        Page not found
       </h1>
-      <h2 className="text-2xl font-semibold mb-2">Page Not Found</h2>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">
-        The page you&apos;re looking for doesn&apos;t exist.
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-xs">
+        The page you're looking for doesn't exist or has been moved.
       </p>
       <Link
         to="/"
-        className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+        id="not-found-home-link"
+        className="inline-flex items-center gap-2 h-10 px-6 rounded-xl bg-primary text-primary-foreground text-sm font-semibold shadow-sm shadow-primary/25 hover:opacity-90 active:scale-[0.98] transition-all"
       >
-        Back to Dashboard
+        ← Back to Dashboard
       </Link>
     </div>
   );
 }
+
+export default NotFoundPage;

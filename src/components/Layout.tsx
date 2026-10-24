@@ -1,97 +1,140 @@
 // src/components/Layout.tsx
-// The shared shell rendered on every page: nav bar + dark mode toggle + <Outlet />.
-//
-// KEY CONCEPTS:
-// - NavLink (not Link) is used so we can read `isActive` to highlight the current page.
-// - The Dashboard NavLink needs `end` so it only matches exactly "/",
-//   not every URL that starts with "/" (which is all of them).
-// - Dark mode toggle lives in uiStore so every page inherits it. The wrapping div
-//   conditionally gets className="dark", and Tailwind's dark: variants kick in.
-// - <Outlet /> inside <main> is what renders the matched child route's element.
-//   If you forget <Outlet />, child routes render NOTHING — with zero errors.
+// Professional app shell for Peer Tutoring Booking Platform with clean Lucide icons (no emojis).
 
 import { NavLink, Outlet, useNavigate } from 'react-router';
+import {
+  GraduationCap,
+  LayoutDashboard,
+  BookOpen,
+  CalendarCheck,
+  Sun,
+  Moon,
+  LogOut,
+  User,
+} from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useUiStore } from '../store/uiStore';
+import { Toaster } from './Toaster';
+import { StatusBadge } from './StatusBadge';
 
 export function Layout() {
   const isDarkMode = useUiStore((state) => state.isDarkMode);
   const toggleDarkMode = useUiStore((state) => state.toggleDarkMode);
-  const { token, userName, logout } = useAuthStore();
+  const { token, user, userName, logout } = useAuthStore();
   const navigate = useNavigate();
 
-  // Shared style helper for NavLink — highlights the active page.
-  // NavLink passes { isActive } into a className callback.
-  const navLinkClass = ({ isActive }: { isActive: boolean }): string =>
-    `px-3 py-2 rounded transition-colors ${
-      isActive
-        ? 'bg-blue-600 text-white'
-        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-    }`;
-
-  const handleLogout = (): void => {
+  const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate('/login');
   };
+
+  const navLinkClass = ({ isActive }: { isActive: boolean }): string =>
+    [
+      'inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all',
+      isActive
+        ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary font-semibold'
+        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800',
+    ].join(' ');
 
   return (
     <div className={isDarkMode ? 'dark' : ''}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-        {/* ===== NAV BAR ===== */}
-        <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3">
-          <div className="max-w-5xl mx-auto flex items-center justify-between">
-            {/* Left side — app name + nav links */}
-            <div className="flex items-center gap-4">
-              <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                Peer Tutoring
-              </span>
+      <div className="min-h-screen bg-[var(--background)] transition-colors duration-200">
+        {/* ── Top Navigation Bar ── */}
+        <nav className="sticky top-0 z-40 bg-white/85 dark:bg-gray-900/85 backdrop-blur-md border-b border-gray-200/80 dark:border-gray-800 px-4 md:px-6">
+          <div className="max-w-6xl mx-auto h-16 flex items-center justify-between gap-4">
+            {/* Brand */}
+            <NavLink to="/" className="flex items-center gap-2.5 flex-shrink-0 group">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/25 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                <GraduationCap className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-base font-bold text-gray-900 dark:text-white tracking-tight leading-none">
+                  PeerTutor
+                </span>
+                <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium tracking-tight">
+                  Booking Platform
+                </span>
+              </div>
+            </NavLink>
 
-              {/* `end` on Dashboard NavLink means it only matches exactly "/".
-                  Without it, "/" is a prefix of every URL, so Dashboard would
-                  always appear active. */}
-              <NavLink to="/" end className={navLinkClass}>
-                Dashboard
-              </NavLink>
-              <NavLink to="/sessions" className={navLinkClass}>
-                Sessions
-              </NavLink>
-              <NavLink to="/bookings" className={navLinkClass}>
-                Bookings
-              </NavLink>
-            </div>
+            {/* Nav links */}
+            {token && (
+              <div className="flex items-center gap-1 sm:gap-2">
+                <NavLink to="/" end className={navLinkClass} id="nav-dashboard">
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                </NavLink>
+                <NavLink to="/sessions" className={navLinkClass} id="nav-sessions">
+                  <BookOpen className="w-4 h-4" />
+                  <span>Sessions</span>
+                </NavLink>
+                <NavLink to="/bookings" className={navLinkClass} id="nav-bookings">
+                  <CalendarCheck className="w-4 h-4" />
+                  <span>Bookings</span>
+                </NavLink>
+              </div>
+            )}
 
-            {/* Right side — auth + dark mode */}
-            <div className="flex items-center gap-3">
+            {/* Right controls */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {/* Dark mode toggle */}
+              <button
+                id="dark-mode-toggle"
+                onClick={toggleDarkMode}
+                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                className="h-9 w-9 flex items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+              </button>
+
+              {/* User profile / Auth buttons */}
               {token === null ? (
-                <NavLink to="/login" className={navLinkClass}>
-                  Login
+                <NavLink
+                  to="/login"
+                  id="nav-login"
+                  className="h-9 px-4 rounded-lg text-sm font-semibold inline-flex items-center gap-1.5 bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.97] transition-all shadow-sm shadow-primary/20"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Sign In</span>
                 </NavLink>
               ) : (
-                <button
-                  onClick={handleLogout}
-                  className="px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                >
-                  Logout ({userName})
-                </button>
-              )}
+                <div className="flex items-center gap-2">
+                  {/* User pill */}
+                  <div className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60">
+                    <div className="h-6 w-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">
+                      {userName?.charAt(0).toUpperCase() ?? 'U'}
+                    </div>
+                    <span className="text-xs text-gray-800 dark:text-gray-200 font-medium max-w-[110px] truncate">
+                      {userName}
+                    </span>
+                    {user?.role && (
+                      <StatusBadge status={user.role} size="sm" />
+                    )}
+                  </div>
 
-              <button
-                onClick={toggleDarkMode}
-                className="px-3 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
-              >
-                {isDarkMode ? '☀️ Light' : '🌙 Dark'}
-              </button>
+                  {/* Logout */}
+                  <button
+                    id="logout-btn"
+                    onClick={handleLogout}
+                    title="Sign Out"
+                    className="h-9 px-3 rounded-lg text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span className="hidden md:inline">Logout</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </nav>
 
-        {/* ===== PAGE CONTENT ===== */}
-        {/* <Outlet /> renders whichever child route matches the current URL.
-            Forgetting this line means NOTHING from child routes appears — and
-            React Router gives you zero warnings about it. */}
-        <main className="max-w-5xl mx-auto p-6 text-gray-900 dark:text-gray-100">
+        {/* ── Page Content ── */}
+        <main className="max-w-6xl mx-auto px-4 md:px-6 py-8">
           <Outlet />
         </main>
+
+        {/* ── Toast Portal ── */}
+        <Toaster />
       </div>
     </div>
   );

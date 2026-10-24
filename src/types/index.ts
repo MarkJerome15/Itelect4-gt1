@@ -1,27 +1,26 @@
-// types/index.ts
+// src/types/index.ts
+// Core type definitions.
+// The old tutoring-session / booking types are kept for backward compat
+// but the real API types now live in src/api/client.ts.
 
 // ===== ENUMS =====
-// Const enum for User role ("tutor" | "tutee"). 
-// Const enums are fully erased during compilation, leaving only their values.
 export enum UserRole {
-  Tutor = "tutor",
-  Tutee = "tutee",
+  Tutor = 'tutor',
+  Tutee = 'tutee',
 }
 
-// Regular enum for the Booking status lifecycle.
-// Useful when you need the enum object to exist at runtime (e.g., iterating over statuses).
 export enum BookingStatus {
-  Requested = "requested",
-  Confirmed = "confirmed",
-  Completed = "completed",
+  Requested = 'requested',
+  Confirmed = 'confirmed',
+  Completed = 'completed',
 }
 
-// ===== CORE ENTITIES =====
+// ===== LEGACY MOCK ENTITIES (used by mockData.ts / DashboardPage tutors) =====
 export interface User {
   id: number;
   name: string;
   email: string;
-  role: UserRole; // Uses the UserRole const enum
+  role: UserRole;
   isActive: boolean;
 }
 
@@ -37,13 +36,11 @@ export interface Booking {
   id: number;
   sessionId: number;
   tuteeId: number;
-  status: BookingStatus; // Uses the BookingStatus regular enum
+  status: BookingStatus;
   scheduledAt: Date;
 }
 
 // ===== GENERICS =====
-// 1. Generic interface ApiResponse<T> that can wrap any data shape.
-// 'T' is a placeholder for the actual type of data we're responding with.
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
@@ -51,34 +48,19 @@ export interface ApiResponse<T> {
 }
 
 // ===== UTILITY TYPES =====
-// 1. Partial<T>: Creates a type with all properties of T set to optional. 
-// Excellent for update payloads where you might only update 1 or 2 fields.
 export type BookingUpdate = Partial<Booking>;
+export type PublicUser = Omit<User, 'email' | 'isActive'>;
+export type UserPreview = Pick<User, 'id' | 'name' | 'role'>;
 
-// 2. Omit<T, K>: Creates a type by removing keys K from T. 
-// Perfect for safely exposing user profiles without revealing sensitive fields like email.
-export type PublicUser = Omit<User, "email" | "isActive">;
-
-// 3. Pick<T, K>: Creates a type by explicitly selecting keys K from T. 
-// Great for generating a lightweight preview object (e.g., in a list of users).
-export type UserPreview = Pick<User, "id" | "name" | "role">;
-
-// ===== SESSION 7 → 10: API TYPES =====
-// The Vercel/MongoDB backend returns _id (a string ObjectId).
-// We normalise to `id` for the UI and keep `_id` optional so both
-// json-server and Mongoose responses satisfy the same type.
-export type ApiTutoringSession = Omit<TutoringSession, "id"> & {
+// Legacy API types (kept for reference; new code uses src/api/client.ts types)
+export type ApiTutoringSession = Omit<TutoringSession, 'id'> & {
   _id?: string;
   id: string;
 };
-
-export type ApiBooking = Omit<Booking, "id" | "scheduledAt" | "sessionId"> & {
+export type ApiBooking = Omit<Booking, 'id' | 'scheduledAt' | 'sessionId'> & {
   _id?: string;
   id: string;
   sessionId: string;
   scheduledAt: string;
 };
-
-// What we SEND when creating one. No id yet -- the server makes it.
-export type NewBooking = Omit<ApiBooking, "id" | "_id">;
-
+export type NewBooking = Omit<ApiBooking, 'id' | '_id'>;
