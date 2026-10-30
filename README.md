@@ -1,5 +1,7 @@
 # Peer Tutoring Booking Platform
 
+[![CI](https://github.com/MarkJerome15/Itelect4-gt1/actions/workflows/ci.yml/badge.svg)](https://github.com/MarkJerome15/Itelect4-gt1/actions/workflows/ci.yml)
+
 A web application that connects students with peer tutors. Tutees can browse available tutors and tutoring sessions, make bookings, and track booking statuses. Built with React, TypeScript, and Vite for ITELECT4.
 
 ## Live Deployment
